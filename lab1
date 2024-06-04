@@ -1,0 +1,114 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    std::string item;
+    int id;
+    double price;
+    Node* next;
+};
+
+class LinkedList {
+private:
+    Node* head;
+
+public:
+    LinkedList() : head(nullptr) {}
+
+    void add_start(std::string item, int id, double price) {
+        Node* newNode = new Node{ item, id, price, head };
+        head = newNode;
+    }
+
+    void add_last(std::string item, int id, double price) {
+        Node* newNode = new Node{ item, id, price, nullptr };
+
+        if (!head) {
+            head = newNode;
+            return;
+        }
+
+        Node* current = head;
+        while (current->next) {
+            current = current->next;
+        }
+
+        current->next = newNode;
+    }
+
+    void add_after(std::string targetitem, std::string item, int id, double price) {
+        Node* current = head;
+        while (current && current->item != targetitem) {
+            current = current->next;
+        }
+
+        if (current) {
+            Node* newNode = new Node{ item, id, price, current->next };
+            current->next = newNode;
+        }
+    }
+
+    void add_before(std::string targetitem, std::string item, int id, double price) {
+        if (!head) return;
+
+        if (head->item == targetitem) {
+            add_start(item, id, price);
+            return;
+        }
+
+        Node* current = head;
+        while (current->next && current->next->item != targetitem) {
+            current = current->next;
+        }
+
+        if (current->next) {
+            Node* newNode = new Node{ item, id, price, current->next };
+            current->next = newNode;
+        }
+    }
+
+    void remove(std::string targetitem) {
+        if (!head) return;
+
+        if (head->item == targetitem) {
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+            return;
+        }
+
+        Node* current = head;
+        while (current->next && current->next->item != targetitem) {
+            current = current->next;
+        }
+
+        if (current->next) {
+            Node* temp = current->next;
+            current->next = current->next->next;
+            delete temp;
+        }
+    }
+
+    void print() {
+        Node* current = head;
+        while (current) {
+            std::cout << "ITEM: " << current->item << ", ID: " << current->id << ", PRICE: " << current->price << std::endl;
+            current = current->next;
+        }
+        std::cout << std::endl;
+    }
+};
+
+int main() {
+    LinkedList food;
+
+    food.add_start("bread", 1, 10);
+    food.add_last("milk", 2, 60);
+    food.add_after("bread", "eggs", 7, 65);
+    food.add_before("milk", "meat", 5, 250);
+    food.print();
+    food.remove("meat");
+    food.print();
+
+    return 0;
+}
